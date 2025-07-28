@@ -25,9 +25,9 @@ fn main() -> Result<()> {
     println!("Enumerating mappings and setting them to writeable...");
     for mapping in &mut get_memmap(my_pid)? {
         println!("{}", mapping);
-        if mapping.path.starts_with("[v") {
+        if mapping.path.starts_with("[") {
             println!(
-                "  Skipping {} - userspace cannot change kernel page permissions",
+                "  Skipping {} - special page",
                 mapping.path
             );
             continue;
@@ -44,7 +44,7 @@ fn main() -> Result<()> {
 
     let candidates = &mappings
         .into_iter()
-        .filter(|m| !m.path.starts_with("[v"))
+        .filter(|m| !m.path.starts_with("["))
         .collect::<Vec<Mapping>>();
 
     println!(
@@ -66,7 +66,7 @@ fn main() -> Result<()> {
         let end_addr = start_addr + pagesize;
 
         println!(
-            "Bang! {} @ 0x{} - 0x{}\n",
+            "Bang! {} @ 0x{:X} - 0x{:X}\n",
             mapping
                 .path
                 .split('/')
